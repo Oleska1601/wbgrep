@@ -1,0 +1,10 @@
+test line 1
+TEST line 2
+12345
+test line 4
+another test
+LAST LINE
+pattern here
+just pattern
+no match
+final line

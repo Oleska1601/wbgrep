@@ -1,4 +1,0 @@
-before target
-target
-after target
-another line

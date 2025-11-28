@@ -2,8 +2,9 @@ package main
 
 import (
 	"log"
-	"wbgrep/internal/grepper"
-	"wbgrep/internal/parser"
+
+	"github.com/Oleska1601/wbgrep/internal/app"
+	"github.com/Oleska1601/wbgrep/internal/parser"
 )
 
 func main() {
@@ -11,10 +12,5 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	grepper := grepper.New(flags, pattern, files)
-	err = grepper.Grep()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
+	app.Run(flags, pattern, files)
 }

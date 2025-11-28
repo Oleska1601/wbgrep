@@ -1,0 +1,11 @@
+context before 1
+context before 2
+MATCH LINE 1
+context after 1
+context after 2
+context before 3
+context before 4
+MATCH LINE 2  
+context after 3
+context after 4
+final line

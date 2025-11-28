@@ -5,6 +5,7 @@ import (
 	"flag"
 )
 
+// Flags represents command-line flags for configuring grep behavior
 type Flags struct {
 	FlagAN int
 	FlagBN int
@@ -16,6 +17,7 @@ type Flags struct {
 	FlagN  bool
 }
 
+// Parse parses command-line arguments and returns Flags configuration, search pattern and files if they were provided
 func Parse() (*Flags, string, []string, error) {
 	flags := &Flags{}
 	flag.IntVar(&flags.FlagAN, "A", 0, "print additional N lines after each found line")

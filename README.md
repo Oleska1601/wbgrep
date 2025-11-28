@@ -31,9 +31,41 @@
 
 Код должен быть чистым, отформатированным (gofmt), работать без ситуаций гонки и успешно проходить golint.
 
-## Запуск
+### Тестирование
+- тестирование возможно либо через Stdin, либо через файл(ы)
 
+```bash
+make check
 ```
-go run ./cmd/app/main.go -n -B=2 "hello" file.txt
+
+```bash
+# Базовый поиск
+go run ./cmd/app/main.go "test" ./testdata/basic.txt
+
+# Контекст
+go run ./cmd/app/main.go -A 2 "MATCH" ./testdata/context.txt
+go run ./cmd/app/main.go -B 2 "MATCH" ./testdata/context.txt  
+go run ./cmd/app/main.go -C 1 "MATCH" ./testdata/context.txt
+
+# Игнорирование регистра
+go run ./cmd/app/main.go -i "hello" ./testdata/case.txt
+go run ./cmd/app/main.go -i -v "hello" ./testdata/case.txt
+
+# Подсчет количества
+go run ./cmd/app/main.go -c "line" ./testdata/numbers.txt
+
+# Инвертирование
+go run ./cmd/app/main.go -v "pattern" ./testdata/invert.txt
+
+# Фиксированная строка (не regex)
+go run ./cmd/app/main.go -F "hello.world" ./testdata/fixed.txt
+
+# Номера строк
+go run ./cmd/app/main.go -n "^[0-9]+$" ./testdata/numbers.txt
+
+# Комбинированные флаги
+go run ./cmd/app/main.go -n -C 1 "hello" ./testdata/case.txt
+go run ./cmd/app/main.go -v -c "skip" ./testdata/invert.txt
 ```
+
 

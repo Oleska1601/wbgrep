@@ -2,53 +2,57 @@ package grepper
 
 import (
 	"bufio"
+	"context"
 	"fmt"
-	"math"
+	"log"
 )
 
-type ResultLine struct {
-	Line string
-	Num  int
-}
-
-func newResultLine(line string, num int) ResultLine {
-	return ResultLine{
-		Line: line,
-		Num:  num,
+func (g *Grepper) formatLine(line string, num int) string {
+	if g.flags.FlagN {
+		return fmt.Sprintf("%d:%s", num, line)
 	}
+	return line
 }
 
-func (g *Grepper) processLines(scanner *bufio.Scanner) ([]ResultLine, error) {
+func (g *Grepper) processLines(ctx context.Context, scanner *bufio.Scanner, output chan<- string) {
+	bufSize := max(g.flags.FlagBN, g.flags.FlagCN)
+	buffer := newBuffer(bufSize + 1) // общее кол-во значений, которые выводятся до найденной строки +1 для хранения самой найденной строки и последующего корректного вывода
+	linesAfter := max(g.flags.FlagAN, g.flags.FlagCN)
 
-	size := int(math.Max(float64(g.flags.FlagBN), float64(g.flags.FlagCN)))
-	queueBefore := newQueue(size + 1)
-
-	end := int(math.Max(float64(g.flags.FlagAN), float64(g.flags.FlagCN)))
 	var afterCount int
-	lineNum := 0
-	var res []ResultLine
+	var lineNum int
 
 	for scanner.Scan() {
 		line := scanner.Text()
-
 		lineNum++
-		lineResult := newResultLine(line, lineNum)
+
 		if afterCount > 0 {
-			res = append(res, lineResult)
-			afterCount--
-		} else if afterCount == 0 {
-			queueBefore.enqueue(lineResult)
+			select {
+			case <-ctx.Done():
+				return
+			case output <- g.formatLine(line, lineNum):
+				afterCount--
+			}
+		} else {
+			buffer.add(g.formatLine(line, lineNum))
 		}
+
 		if g.isMatch(line) {
-			values := queueBefore.getAll()
-			res = append(res, values...)
-			queueBefore.clear()
-			afterCount = end
+			for _, bufLine := range buffer.getAll() {
+				// check
+				select {
+				case <-ctx.Done():
+					return
+				case output <- bufLine:
+				}
+			}
+
+			buffer.clear()
+			afterCount = linesAfter
 		}
-	}
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("scan string error: %w", err)
 	}
 
-	return res, nil
+	if err := scanner.Err(); err != nil {
+		log.Printf("scanner error: %v\n", err)
+	}
 }

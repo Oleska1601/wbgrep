@@ -1,0 +1,6 @@
+match pattern 1
+skip this
+match pattern 2
+ignore me
+match pattern 3
+another skip

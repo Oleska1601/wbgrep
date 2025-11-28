@@ -1,5 +1,0 @@
-first line
-first match
-third line
-second match
-last line

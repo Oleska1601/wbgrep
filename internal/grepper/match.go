@@ -24,5 +24,6 @@ func (g *Grepper) isMatch(line string) bool {
 	if g.flags.FlagV {
 		return !isMatch
 	}
+
 	return isMatch
 }
